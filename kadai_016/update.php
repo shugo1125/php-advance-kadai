@@ -15,7 +15,7 @@ if (isset($_POST['submit'])) {
           book_name = :book_name,
           price = :price,
           stock_quantity = :stock_quantity,
-          vendor_code = :vendor_code
+          genre_code = :genre_code
           WHERE id = :id
       ';
     $stmt_update = $pdo->prepare($sql_update);
@@ -25,7 +25,7 @@ if (isset($_POST['submit'])) {
     $stmt_update->bindValue(':book_name', $_POST['book_name'], PDO::PARAM_STR);
     $stmt_update->bindValue(':price', $_POST['price'], PDO::PARAM_INT);
     $stmt_update->bindValue(':stock_quantity', $_POST['stock_quantity'], PDO::PARAM_INT);
-    $stmt_update->bindValue(':genre_code', $_POST['vendor_code'], PDO::PARAM_INT);
+    $stmt_update->bindValue(':genre_code', $_POST['genre_code'], PDO::PARAM_INT);
     $stmt_update->bindValue(':id', $_GET['id'], PDO::PARAM_INT);
 
     // SQL文を実行する
@@ -67,15 +67,15 @@ if (isset($_GET['id'])) {
       exit('idパラメータの値が不正です。');
     }
 
-    // vendorsテーブルからvendor_codeカラムのデータを取得するためのSQL文を変数$sql_select_vendor_codesに代入する
-    $sql_select_vendor_codes = 'SELECT genre_code FROM genres';
+    // genresテーブルからgenre_codeカラムのデータを取得するためのSQL文を変数$sql_select_genre_codesに代入する
+    $sql_select_genre_codes = 'SELECT genre_code FROM genres';
 
     // SQL文を実行する
-    $stmt_select_vendor_codes = $pdo->query($sql_select_vendor_codes);
+    $stmt_select_genre_codes = $pdo->query($sql_select_genre_codes);
 
     // SQL文の実行結果を配列で取得する
     // 補足：PDO::FETCH_COLUMNは1つのカラムの値を1次元配列（多次元ではない普通の配列）で取得する設定である
-    $vendor_codes = $stmt_select_vendor_codes->fetchAll(PDO::FETCH_COLUMN);
+    $genre_codes = $stmt_select_genre_codes->fetchAll(PDO::FETCH_COLUMN);
   } catch (PDOException $e) {
     exit($e->getMessage());
   }
@@ -126,17 +126,17 @@ if (isset($_GET['id'])) {
           <label for="stock_quantity">在庫数</label>
           <input type="number" id="stock_quantity" name="stock_quantity" value="<?= $book['stock_quantity'] ?>" min="0" max="100000000" required>
 
-          <label for="vendor_code">ジャンルコード</label>
-          <select id="vendor_code" name="vendor_code" required>
+          <label for="genre_code">ジャンルコード</label>
+          <select id="genre_code" name="genre_code" required>
             <option disabled selected value>選択してください</option>
             <?php
             // 配列の中身を順番に取り出し、セレクトボックスの選択肢として出力する
-            foreach ($vendor_codes as $vendor_code) {
-              // もし変数$vendor_codeが書籍の仕入先コードの値と一致していれば、selected属性をつけて初期値にする
-              if ($vendor_code === $book['vendor_code']) {
-                echo "<option value='{$vendor_code}' selected>{$vendor_code}</option>";
+            foreach ($genre_codes as $genre_code) {
+              // もし変数$genre_codeが書籍の仕入先コードの値と一致していれば、selected属性をつけて初期値にする
+              if ($genre_code === $book['genre_code']) {
+                echo "<option value='{$genre_code}' selected>{$genre_code}</option>";
               } else {
-                echo "<option value='{$vendor_code}'>{$vendor_code}</option>";
+                echo "<option value='{$genre_code}'>{$genre_code}</option>";
               }
             }
             ?>

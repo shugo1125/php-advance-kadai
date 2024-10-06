@@ -9,8 +9,8 @@ if (isset($_POST['submit'])) {
 
     // 動的に変わる値をプレースホルダに置き換えたINSERT文をあらかじめ用意する
     $sql_insert = '
-          INSERT INTO books (book_code, book_name, price, stock_quantity, vendor_code)
-          VALUES (:book_code, :book_name, :price, :stock_quantity, :vendor_code)
+          INSERT INTO books (book_code, book_name, price, stock_quantity, genre_code)
+          VALUES (:book_code, :book_name, :price, :stock_quantity, :genre_code)
       ';
     $stmt_insert = $pdo->prepare($sql_insert);
 
@@ -19,7 +19,7 @@ if (isset($_POST['submit'])) {
     $stmt_insert->bindValue(':book_name', $_POST['book_name'], PDO::PARAM_STR);
     $stmt_insert->bindValue(':price', $_POST['price'], PDO::PARAM_INT);
     $stmt_insert->bindValue(':stock_quantity', $_POST['stock_quantity'], PDO::PARAM_INT);
-    $stmt_insert->bindValue(':vendor_code', $_POST['vendor_code'], PDO::PARAM_INT);
+    $stmt_insert->bindValue(':genre_code', $_POST['genre_code'], PDO::PARAM_INT);
 
     // SQL文を実行する
     $stmt_insert->execute();
@@ -41,15 +41,15 @@ if (isset($_POST['submit'])) {
 try {
   $pdo = new PDO($dsn, $user, $password);
 
-  // vendorsテーブルからvendor_codeカラムのデータを取得するためのSQL文を変数$sql_selectに代入する
-  $sql_select = 'SELECT vendor_code FROM vendors';
+  // genresテーブルからgenre_codeカラムのデータを取得するためのSQL文を変数$sql_selectに代入する
+  $sql_select = 'SELECT genre_code FROM genres';
 
   // SQL文を実行する
   $stmt_select = $pdo->query($sql_select);
 
   // SQL文の実行結果を配列で取得する
   // 補足：PDO::FETCH_COLUMNは1つのカラムの値を1次元配列（多次元ではない普通の配列）で取得する設定である
-  $vendor_codes = $stmt_select->fetchAll(PDO::FETCH_COLUMN);
+  $genre_codes = $stmt_select->fetchAll(PDO::FETCH_COLUMN);
 } catch (PDOException $e) {
   exit($e->getMessage());
 }
@@ -96,13 +96,13 @@ try {
           <label for="stock_quantity">在庫数</label>
           <input type="number" id="stock_quantity" name="stock_quantity" min="0" max="100000000" required>
 
-          <label for="vendor_code">ジャンルコード</label>
-          <select id="vendor_code" name="vendor_code" required>
+          <label for="genre_code">ジャンルコード</label>
+          <select id="genre_code" name="genre_code" required>
             <option disabled selected value>選択してください</option>
             <?php
             // 配列の中身を順番に取り出し、セレクトボックスの選択肢として出力する
-            foreach ($vendor_codes as $vendor_code) {
-              echo "<option value='{$vendor_code}'>{$vendor_code}</option>";
+            foreach ($genre_codes as $genre_code) {
+              echo "<option value='{$genre_code}'>{$genre_code}</option>";
             }
             ?>
           </select>
